@@ -28,23 +28,70 @@ class App extends Component {
     this.deleteBuyer = this.deleteBuyer.bind(this);
   }
 
+  // componentDidMount() {
+  //   this.getVehicles();
+  // }
+
   getVehicles() {
+    axios.get('https://joes-autos.herokuapp.com/api/vehicles')
+      .then((response) => {
+        // console.log(response)
+        const obj = { vehiclesToDisplay: response.data }
+        this.setState(obj)
+        toast.success('We got the cars!')
+      })
+      .catch((error) => {
+        toast.error(`Didn't get the cars!`)
+      })
     // axios (GET)
     // setState with response -> vehiclesToDisplay
+    //.data came from console.log(response) > in that response there was an object called data that contained the data that we were looking for
+    //response also gave us one whole opbject, data was within that object which is the reason for the dot notation
+    //this will usually be called data in axios
   }
 
   getPotentialBuyers() {
-    // axios (GET)
-    // setState with response -> buyersToDisplay
-  }
+    axios.get(`https://joes-autos.herokuapp.com/api/buyers/`)
+    .then((response)=>{
+      this.setState({
+        buyersToDisplay: response.data
+      })
+      toast.success(`we got the buyers!`)
+    }).catch(()=>{
+      toast.error(`you failed at getting the buyers`)
+    })
+        // axios (GET)
+        // setState with response -> buyersToDisplay
+}
 
   sellCar(id) {
+    axios.delete(`https://joes-autos.herokuapp.com/api/vehicles/${id}`)
+      .then((response) => {
+        // console.log(response)
+        this.setState({
+          vehiclesToDisplay: response.data.vehicles
+        })
+        toast.success("we deleted the car")
+      }).catch(() => {
+        toast.error("you fool, you haven't deleted anything")
+      })
     // axios (DELETE)
     // setState with response -> vehiclesToDisplay
   }
 
   filterByMake() {
     let make = this.selectedMake.value;
+
+    axios.get(`https://joes-autos.herokuapp.com/api/vehicles?make=${make}`)
+      .then((response) => {
+        // console.log(response)
+        const obj = { vehiclesToDisplay: response.data }
+        this.setState(obj)
+        toast.success('We got the cars!')
+      })
+      .catch((error) => {
+        toast.error(`Didn't get the cars!`)
+      })
 
     // axios (GET)
     // setState with response -> vehiclesToDisplay
@@ -53,11 +100,32 @@ class App extends Component {
   filterByColor() {
     let color = this.selectedColor.value;
 
+    axios.get(`https://joes-autos.herokuapp.com/api/vehicles?color=${color}`)
+    .then((response)=>{
+      this.setState({
+        vehiclesToDisplay: response.data
+      })
+      toast.success(`you found the car with that color`)
+    })
+    .catch((error)=>{
+      toast.error(`no cars here with that color`)
+    })
+
     // axios (GET)
     // setState with response -> vehiclesToDisplay
   }
 
   updatePrice(priceChange, id) {
+    axios.put(`https://joes-autos.herokuapp.com/api/vehicles/${id}/${priceChange}`)
+      .then((response) => {
+        // console.log(response)
+        this.setState({
+          vehiclesToDisplay: response.data.vehicles
+        })
+        toast.success("we updated the price!")
+      }).catch(() => {
+        toast.error("no update for you")
+      })
     // axios (PUT)
     // setState with response -> vehiclesToDisplay
   }
@@ -70,9 +138,19 @@ class App extends Component {
       year: this.year.value,
       price: this.price.value
     };
-
+    axios.post(`https://joes-autos.herokuapp.com/api/vehicles/`, newCar)
+      .then((response) => {
+        // console.log(response)
+        this.setState({
+          vehiclesToDisplay: response.data.vehicles
+        })
+        toast.success("added a new car")
+      }).catch(() => {
+        toast.error("can't add car")
+      })
     // axios (POST)
     // setState with response -> vehiclesToDisplay
+    //post takes in an object
   }
 
   addBuyer() {
@@ -82,11 +160,31 @@ class App extends Component {
       address: this.address.value
     };
 
+    axios.post(`https://joes-autos.herokuapp.com/api/buyers/`, newBuyer)
+      .then((response)=>{
+        this.setState({
+          buyersToDisplay: response.data.buyers
+        })
+        toast.success(`You added a buyer!`)
+      })
+      .catch((error)=>{
+        toast.error(`you havent added anything`)
+      })
     //axios (POST)
     // setState with response -> buyersToDisplay
   }
 
   deleteBuyer(id) {
+    axios.delete(`https://joes-autos.herokuapp.com/api/buyers/${id}`)
+    .then((response)=>{
+      this.setState({
+        buyersToDisplay: response.data.buyers
+      })
+      toast.success(`you deleted the buyer!`)
+    })
+    .catch((error)=>{
+      toast.error(`you haven't deleted anything`)
+    })
     // axios (DELETE)
     //setState with response -> buyersToDisplay
   }
@@ -94,12 +192,35 @@ class App extends Component {
   nameSearch() {
     let searchLetters = this.searchLetters.value;
 
+    axios.get(`https://joes-autos.herokuapp.com/api/buyers?name=${searchLetters}`)
+    .then((response)=>{
+      // console.log(response)
+      this.setState({
+        buyersToDisplay: response.data
+      })
+      toast.success(`you found the car`)
+    })
+    .catch((error)=>{
+      toast.error(`you couldnt find it`)
+    })
     // axios (GET)
     // setState with response -> buyersToDisplay
   }
 
   byYear() {
     let year = this.searchYear.value;
+
+    axios.get(`https://joes-autos.herokuapp.com/api/vehicles?year=${year}`)
+    .then((response)=>{
+      // console.log(response)
+      this.setState({
+        vehiclesToDisplay: response.data
+      })
+      toast.success(`you found the car`)
+    })
+    .catch((error)=>{
+      toast.error(`you couldnt find it`)
+    })
 
     // axios (GET)
     // setState with response -> vehiclesToDisplay
